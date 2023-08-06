@@ -20,6 +20,7 @@
   "dependencies": {
     "appium": "^2.0.1",
     "appium-flutter-driver": "^1.18.1",
-    "appium-flutter-finder": "^0.1.0"
+    "appium-flutter-finder": "^0.1.0",
+    "deepmerge-ts": "^5.1.0"
   }
 }
