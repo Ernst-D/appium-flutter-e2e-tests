@@ -139,7 +139,7 @@ export const config: Options.Testrunner = {
     // see also: https://webdriver.io/docs/dot-reporter
     reporters: ['spec',[  
         'cucumberjs-json', {
-            jsonFolder: './reports/new/',
+            jsonFolder: 'reports/new/',
         },
     ]],
 
