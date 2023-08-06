@@ -2,14 +2,15 @@ import { Given, When, Then } from '@wdio/cucumber-framework';
 
 import {  } from "appium-flutter-finder"
 
-import LoginPage from '../pageobjects/login.page.js';
-import SecurePage from '../pageobjects/secure.page.js';
+import LoginPage from '../pageobjects/login.page.ts';
+import SecurePage from '../pageobjects/secure.page.ts';
 
 const pages = {
     login: LoginPage
 }
 
 Given(/^I am on the (\w+) page$/, async (page) => {
+    //@ts-ignore
     await pages[page].open()
 });
 
