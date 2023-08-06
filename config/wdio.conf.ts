@@ -1,4 +1,5 @@
 import type { Options } from '@wdio/types'
+import { cucumberReporter } from '../reporter';
 export const config: Options.Testrunner = {
     //
     // ====================
@@ -136,7 +137,11 @@ export const config: Options.Testrunner = {
     // Test reporter for stdout.
     // The only one supported by default is 'dot'
     // see also: https://webdriver.io/docs/dot-reporter
-    reporters: ['spec','cucumberjs-json'],
+    reporters: ['spec',[  
+        'cucumberjs-json', {
+            jsonFolder: './reports/new/',
+        },
+    ]],
 
     //
     // If you are using Cucumber you need to specify the location of your step definitions.
@@ -320,8 +325,9 @@ export const config: Options.Testrunner = {
      * @param {Array.<Object>} capabilities list of capabilities details
      * @param {<Object>} results object containing test results
      */
-    // onComplete: function(exitCode, config, capabilities, results) {
-    // },
+    onComplete: function(exitCode, config, capabilities, results) {
+        cucumberReporter.generateCucumberHtmlReport(capabilities);
+    },
     /**
     * Gets executed when a refresh happens.
     * @param {string} oldSessionId session ID of the old session
