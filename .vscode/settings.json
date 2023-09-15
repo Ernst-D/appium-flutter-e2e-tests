@@ -1,0 +1,14 @@
+{
+    "cucumberautocomplete.steps": [
+        "features/step-definitions/**/*.ts"
+    ],
+    "cucumberautocomplete.syncfeatures": "features/*feature",
+    "cucumberautocomplete.strictGherkinCompletion": true,
+    "eslint.validate": [
+        "javascript",
+        "typescript"
+      ],
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    }
+}
