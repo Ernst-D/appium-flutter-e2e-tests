@@ -4,5 +4,5 @@ Feature: Counter app
 
     Scenario: Tap by '+' element increase count
         Given User opened the app
-        When User tap "+" widget
+        When User tap "plus" widget
         Then Count increasing by 1

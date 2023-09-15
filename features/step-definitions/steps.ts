@@ -1,25 +1,31 @@
-import { Given, When, Then } from '@wdio/cucumber-framework';
+import { Given, Then, When } from "@wdio/cucumber-framework";
+import { byValueKey } from "appium-flutter-finder";
 
-import {  } from "appium-flutter-finder"
+const waitFor = async (finder: string, timeout = 2000) => await driver.execute("flutter:waitFor", finder, timeout);
+const tap = async (finder: string) => driver.touchAction(
+    // @ts-ignore
+    { action: 'tap', element: { elementId: finder } }
+);
 
-import LoginPage from '../pageobjects/login.page.ts';
-import SecurePage from '../pageobjects/secure.page.ts';
+Given("User opened the app", async function(){
+    await driver.execute("flutter:waitForFirstFrame")
+    debugger;
+})
 
-const pages = {
-    login: LoginPage
-}
+When('User tap "plus" widget', async function () {
+    const plusFinder = byValueKey("counterView_increment_floatingActionButton");
 
-Given(/^I am on the (\w+) page$/, async (page) => {
-    //@ts-ignore
-    await pages[page].open()
-});
+    await waitFor(plusFinder);
+    await tap(plusFinder);
+    debugger;
+})
 
-When(/^I login with (\w+) and (.+)$/, async (username, password) => {
-    await LoginPage.login(username, password)
-});
+Then('Count increasing by 1', async function () {
+    const counterFinder = byValueKey('counter_value');
 
-Then(/^I should see a flash message saying (.*)$/, async (message) => {
-    await expect(SecurePage.flashAlert).toBeExisting();
-    await expect(SecurePage.flashAlert).toHaveTextContaining(message);
-});
+    await waitFor(counterFinder);
+    const value = await driver.getElementText(counterFinder);
 
+    expect(Number(value)).toEqual(1);
+    debugger
+})
