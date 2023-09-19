@@ -1,14 +1,23 @@
 import "zx/globals";
-const { CODEMAGIC_API_KEY, APP_ID } = process.env;
 
-const parseResponse = (res) => JSON.parse(res) 
+$.verbose = false;
+
+const { CODEMAGIC_API_KEY, APP_NAME } = process.env;
+
+function parseResponse (res) {
+    return JSON.parse(res);
+}
 
 /**
  * 
  * @param {string} appName 
  * @returns {Promise<{ [x: string]: any, "_id": string }>}}
  */
-async function getApp(appName = "appium-flutter-ci-app") {
+async function getApp() {
+    if(APP_NAME == null) {
+        throw new Error("APP_NAME variable is undefined")
+    }
+
     const res = await $`curl -H "Content-Type: application/json" \
     -H "x-auth-token: ${CODEMAGIC_API_KEY}" \
     --request GET https://api.codemagic.io/apps`;
@@ -18,17 +27,23 @@ async function getApp(appName = "appium-flutter-ci-app") {
      */
     const parsedRes = parseResponse(res.stdout)["applications"];
 
-    const app = parsedRes.find((app)=> app["appName"] = appName);
+    const app = parsedRes.find((app)=> app["appName"] = APP_NAME);
 
     return app;
 }
 
-console.log((await getApp()));
+const appId = (await getApp())._id;
+async function getBuilds(appId) {
+    const res = await $`curl -H "Content-Type: application/json" \
+    -H "x-auth-token: ${CODEMAGIC_API_KEY}" \
+    --request GET https://api.codemagic.io/builds?appId=${appId}`;
+
+    return parseResponse(res.stdout);
+};
+
+console.log(await getBuilds(appId));
 process.exit(0)
 
-const builds = async () => await $`curl -H "Content-Type: application/json" \
--H "x-auth-token: ${CODEMAGIC_API_KEY}" \
---request GET https://api.codemagic.io/builds?appId=${APP_ID}`;
 
 // see: https://docs.codemagic.io/rest-api/artifacts/
 const appLink = async (url) => await $`curl -H "x-auth-token: ${CODEMAGIC_API_KEY}" \
