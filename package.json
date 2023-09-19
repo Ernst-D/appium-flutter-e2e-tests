@@ -16,7 +16,8 @@
   },
   "scripts": {
     "wdio": "wdio run ./config/wdio.conf.ts",
-    "wdio:local": "wdio run ./config/wdio.local.conf.ts"
+    "wdio:local": "wdio run ./config/wdio.local.conf.ts",
+    "test:ios":"npx wdio config/wdio.appium.local.conf.ts"
   },
   "dependencies": {
     "appium": "^2.0.1",
