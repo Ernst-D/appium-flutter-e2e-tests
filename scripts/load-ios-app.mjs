@@ -1,11 +1,25 @@
 import "zx/globals";
 const { CODEMAGIC_API_KEY, APP_ID } = process.env;
 
-async function apps() {
-    await $`curl -H "Content-Type: application/json" \
+const parseResponse = (res) => JSON.parse(res) 
+
+async function getApp(appName = "appium-flutter-ci-app") {
+    const res = await $`curl -H "Content-Type: application/json" \
     -H "x-auth-token: ${CODEMAGIC_API_KEY}" \
     --request GET https://api.codemagic.io/apps`;
+
+    /**
+     * @type {object[]}
+     */
+    const parsedRes = parseResponse(res.stdout)["applications"];
+
+    const app = parsedRes.find((app)=> app["appName"] = appName);
+
+    return app;
 }
+
+console.log((await getApp()));
+process.exit(0)
 
 const builds = async () => await $`curl -H "Content-Type: application/json" \
 -H "x-auth-token: ${CODEMAGIC_API_KEY}" \
