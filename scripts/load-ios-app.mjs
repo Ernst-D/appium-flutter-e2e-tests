@@ -3,6 +3,11 @@ const { CODEMAGIC_API_KEY, APP_ID } = process.env;
 
 const parseResponse = (res) => JSON.parse(res) 
 
+/**
+ * 
+ * @param {string} appName 
+ * @returns {Promise<{ [x: string]: any, "_id": string }>}}
+ */
 async function getApp(appName = "appium-flutter-ci-app") {
     const res = await $`curl -H "Content-Type: application/json" \
     -H "x-auth-token: ${CODEMAGIC_API_KEY}" \
