@@ -10,7 +10,8 @@ config.capabilities = [ {
     'appium:deviceName': 'iPhone 14',
     'appium:automationName': 'Flutter',
     "appium:autoAcceptAlerts":true,
-    'appium:app': "./Runner.app",
+    // note: we can use zipped '*.app' binaries, driver will handle itself unzip
+    'appium:app': process.cwd()+"/Runner.app.zip",
     "appium:wdaConnectionTimeout": process.env.DEBUG === "1" ? 600000 : 240000
 } ];
 

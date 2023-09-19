@@ -27,5 +27,4 @@ Then('Count increasing by 1', async function () {
     const value = await driver.getElementText(counterFinder);
 
     expect(Number(value)).toEqual(1);
-    debugger
 })
