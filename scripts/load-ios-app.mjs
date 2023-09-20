@@ -11,7 +11,7 @@ function parseResponse (res) {
 /**
  * 
  * @param {string} appName 
- * @returns {Promise<{ [x: string]: any, "_id": string }>}}
+ * @returns {Promise<{ [x: string]: any, "_id": string, "workflows": object }>}}
  */
 async function getApp() {
     if(APP_NAME == null) {
@@ -32,16 +32,41 @@ async function getApp() {
     return app;
 }
 
+async function findWorkflow(name, codemagicApp){
+    const res = codemagicApp.workflows;
+
+    return Object.values(res).find(workflow => workflow.name === name);
+}
+
 const appId = (await getApp())._id;
+const workflowName = await findWorkflow("ios_sim_dev_driver", await getApp());
+
+// console.log(workflowName);
+
+// note: maybe we can try to send build["_id"] in webhook somehow
 async function getBuilds(appId) {
     const res = await $`curl -H "Content-Type: application/json" \
     -H "x-auth-token: ${CODEMAGIC_API_KEY}" \
-    --request GET https://api.codemagic.io/builds?appId=${appId}`;
+    --request GET https://api.codemagic.io/builds?appId=${appId}&workflowId=${workflowName["_id"]}`;
 
     return parseResponse(res.stdout);
 };
 
-console.log(await getBuilds(appId));
+/**
+ * 
+ * @param {object[]} builds 
+ * @param {string} id 
+ */
+function getBuildsById(builds, id){
+    const res = builds.filter(build => build.workflowId === id)
+    return res;
+}
+
+const sorted = (obj) => obj.sort((a,b) => b.index - a.index )
+console.log(
+    sorted((await getBuilds(appId))["builds"].filter(build => build.workflowId === workflowName["_id"]))
+    // .at(0)
+    );
 process.exit(0)
 
 
