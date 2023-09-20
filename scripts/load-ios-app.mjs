@@ -56,16 +56,26 @@ async function getBuilds(appId) {
  * 
  * @param {object[]} builds 
  * @param {string} id 
+ * 
+ * @returns {object[]}
  */
 function getBuildsById(builds, id){
     const res = builds.filter(build => build.workflowId === id)
     return res;
 }
 
-const sorted = (obj) => obj.sort((a,b) => b.index - a.index )
+/**
+ * 
+ * @param { Array<{ [x: string]: any, index: number }> } obj 
+ * @returns {object[]}
+ */
+const sorted = (obj) => obj.sort((a,b) => b.index - a.index)
+
 console.log(
-    sorted((await getBuilds(appId))["builds"].filter(build => build.workflowId === workflowName["_id"]))
-    // .at(0)
+    sorted(
+        getBuildsById((await getBuilds(appId))["builds"], workflowName["_id"]) 
+    )
+    .at(0)
     );
 process.exit(0)
 
