@@ -1,3 +1,5 @@
+name: Dispatch workflow example
+
 on:
   workflow_dispatch:
     inputs:
