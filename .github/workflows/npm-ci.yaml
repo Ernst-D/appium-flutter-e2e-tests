@@ -1,0 +1,21 @@
+name: test npm install
+
+on:
+  workflow_dispatch
+
+jobs:
+  npm-i:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - uses: actions/setup-node@v3.5.1
+        with:
+          node-version: 18.12.1
+
+      - name: Install dependencies
+        uses: bahmutov/npm-install@v1.8.28
+        
+
+          
