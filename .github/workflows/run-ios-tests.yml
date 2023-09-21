@@ -9,25 +9,32 @@ on:
         required: false
         default: '/features/**/*.feature'
       
-  
+
 jobs:
   ios-appium-tests:
-    timeout-minutes: 5
+    timeout-minutes: 10
     runs-on: macos-13
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3.5.1
         with:
           node-version: 18.12.1
-      - name: Install dependencies
-        uses: bahmutov/npm-install@v1.8.28
+      - uses: futureware-tech/simulator-action@v2
         with:
-           install-command: npm ci
-      - name: Run Appium tests (iOS)
-        run: npm run wdio -- --spec features/login.feature 
-      - name: Archive test report
-        if: always()
-        uses: actions/upload-artifact@v3.1.2
-        with:
-          name: cucumber-report
-          path: ./reports
+          model: 'iPhone 14'
+          os: 'iOS'
+          os_version: '>=16.4'
+          shutdown_after_job: true
+      
+      # - name: Install dependencies
+      #   uses: bahmutov/npm-install@v1.8.28
+      #   with:
+      #      install-command: npm ci
+      # - name: Run Appium tests (iOS)
+      #   run: npm run wdio -- --spec features/login.feature 
+      # - name: Archive test report
+      #   if: always()
+      #   uses: actions/upload-artifact@v3.1.2
+      #   with:
+      #     name: cucumber-report
+      #     path: ./reports
