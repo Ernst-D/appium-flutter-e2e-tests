@@ -18,6 +18,11 @@ config.capabilities = [ {
 config.services = [
     [ 'appium', {
         logPath: './logs',
+        args: {
+            debugLogSpacing: true,
+            logTimestamp: true,
+            logNoColors: true
+        }
     } ]
 ];
 
