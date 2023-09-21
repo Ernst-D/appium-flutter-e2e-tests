@@ -12,7 +12,7 @@ on:
 
 jobs:
   ios-appium-tests:
-    timeout-minutes: 10
+    timeout-minutes: 20
     runs-on: macos-13
     steps:
       - uses: actions/checkout@v3
@@ -21,17 +21,15 @@ jobs:
         with:
           node-version: 18.12.1
 
+      - name: Install dependencies
+        uses: bahmutov/npm-install@v1.8.28      
+      
       - uses: futureware-tech/simulator-action@v2
         with:
           model: 'iPhone 14'
           os: 'iOS'
           os_version: '16.4'
           shutdown_after_job: true
-      
-      - name: Install dependencies
-        uses: bahmutov/npm-install@v1.8.28
-        with:
-           install-command: npm ci
 
       - name: Run Appium tests (iOS)
         run: WDIO_LOG_LEVEL='debug' npm run test:ios -- --spec features/counter.feature
@@ -49,5 +47,3 @@ jobs:
         with:
           name: appium-logs
           path: ./logs
-
-          
