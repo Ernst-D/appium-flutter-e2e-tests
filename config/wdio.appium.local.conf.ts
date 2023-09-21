@@ -11,7 +11,7 @@ config.capabilities = [ {
     'appium:automationName': 'Flutter',
     "appium:autoAcceptAlerts":true,
     // note: we can use zipped '*.app' binaries, driver will handle itself unzip
-    'appium:app': process.cwd()+"/Runner.app.zip",
+    'appium:app': process.cwd()+"/app/Runner.app.zip",
     "appium:wdaConnectionTimeout": process.env.DEBUG === "1" ? 600000 : 240000
 } ];
 
