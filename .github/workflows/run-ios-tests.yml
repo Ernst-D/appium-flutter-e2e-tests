@@ -9,7 +9,7 @@ on:
         required: false
         default: '/features/**/*.feature'
       device:
-        type: string
+        type: choice
         description: Device to run
         required: true
         default: 'iPhone 14'
@@ -18,7 +18,7 @@ on:
           - 'iPhone 14 Pro'
           - 'iPhone SE (3rd generation)'
       os_version:
-        type: string
+        type: choice
         description: OS version for device
         required: true
         default: '16.4'
