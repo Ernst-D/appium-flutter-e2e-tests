@@ -49,7 +49,6 @@ jobs:
           shutdown_after_job: true
         
       - name: Build WebDriverAgent (iOS simulator)
-        working-directory: .github/scripts
         run: |
          chmod +x ${PWD}/.github/scripts/build_wda_sim.sh
          ${PWD}/.github/scripts/build_wda_sim.sh
