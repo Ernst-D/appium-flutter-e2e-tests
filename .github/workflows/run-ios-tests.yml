@@ -61,21 +61,19 @@ jobs:
           ls app
         shell: bash
       
+      - name: Run Appium tests (iOS)
+        run: WDIO_LOG_LEVEL='debug' npm run test:ios -- --spec features/counter.feature
 
+      - name: Archive test report
+        if: always()
+        uses: actions/upload-artifact@v3.1.2
+        with:
+          name: cucumber-report
+          path: ./reports
 
-      # - name: Run Appium tests (iOS)
-      #   run: WDIO_LOG_LEVEL='debug' npm run test:ios -- --spec features/counter.feature
-
-      # - name: Archive test report
-      #   if: always()
-      #   uses: actions/upload-artifact@v3.1.2
-      #   with:
-      #     name: cucumber-report
-      #     path: ./reports
-
-      # - name: Archive appium
-      #   if: always()
-      #   uses: actions/upload-artifact@v3.1.2
-      #   with:
-      #     name: appium-logs
-      #     path: ./logs
+      - name: Archive appium
+        if: always()
+        uses: actions/upload-artifact@v3.1.2
+        with:
+          name: appium-logs
+          path: ./logs
