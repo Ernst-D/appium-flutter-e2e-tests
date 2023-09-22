@@ -51,8 +51,8 @@ jobs:
       - name: Build WebDriverAgent (iOS simulator)
         working-directory: .github/scripts
         run: |
-         chmod +x build_wda_sim.sh
-         ./build_wda_sim.sh
+         chmod +x ${PWD}/.github/scripts/build_wda_sim.sh
+         ${PWD}/.github/scripts/build_wda_sim.sh
         env:
           DEVICE_NAME: ${{ inputs.device }}
         shell: bash
