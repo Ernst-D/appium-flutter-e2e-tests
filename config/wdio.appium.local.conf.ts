@@ -29,6 +29,8 @@ config.services = [
     } ]
 ];
 
+config.connectionRetryTimeout = 240000;
+
 config.before = async function () {
     await driver.switchContext("NATIVE_APP");
     await driver.execute("mobile: terminateApp", { bundleId: "com.apple.mobilesafari" });
