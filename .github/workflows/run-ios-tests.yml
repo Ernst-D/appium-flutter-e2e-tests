@@ -41,11 +41,20 @@ jobs:
       - name: Install dependencies
         uses: bahmutov/npm-install@v1.8.28    
 
+      - uses: futureware-tech/simulator-action@v2
+        with:
+          model: ${{ inputs.device }}
+          os: 'iOS'
+          os_version: ${{ inputs.os_version }}
+          shutdown_after_job: true
+        
       - name: Build WebDriverAgent (iOS simulator)
         working-directory: .github/scripts
         run: |
          chmod +x build_wda_sim.sh
          ./build_wda_sim.sh
+        env:
+          DEVICE_NAME: ${{ inputs.device }}
         shell: bash
       
       - name: Get app dir
@@ -53,12 +62,7 @@ jobs:
           ls app
         shell: bash
       
-      # - uses: futureware-tech/simulator-action@v2
-      #   with:
-      #     model: ${{ inputs.device }}
-      #     os: 'iOS'
-      #     os_version: ${{ inputs.os_version }}
-      #     shutdown_after_job: true
+
 
       # - name: Run Appium tests (iOS)
       #   run: WDIO_LOG_LEVEL='debug' npm run test:ios -- --spec features/counter.feature
