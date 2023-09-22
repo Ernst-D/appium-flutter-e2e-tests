@@ -8,6 +8,23 @@ on:
         description: Glob pattern to run spec
         required: false
         default: '/features/**/*.feature'
+      device:
+        type: string
+        description: Device to run
+        required: true
+        default: 'iPhone 14'
+        options:
+          - 'iPhone 14'
+          - 'iPhone 14 Pro'
+          - 'iPhone SE (3rd generation)'
+      os_version:
+        type: string
+        description: OS version for device
+        required: true
+        default: '16.4'
+        options:
+          - '16.4'
+          - '17.0'
       
 
 jobs:
@@ -22,28 +39,40 @@ jobs:
           node-version: 18.12.1
 
       - name: Install dependencies
-        uses: bahmutov/npm-install@v1.8.28      
+        uses: bahmutov/npm-install@v1.8.28    
+
+      - name: Build WebDriverAgent (iOS simulator)
+        working-directory: .github/scripts
+        run: |
+         chmod +x build_wda_sim.sh
+         ./build_wda_sim.sh
+        shell: bash
       
-      - uses: futureware-tech/simulator-action@v2
-        with:
-          model: 'iPhone 14'
-          os: 'iOS'
-          os_version: '16.4'
-          shutdown_after_job: true
+      - name: Get app dir
+        run: |
+          ls app
+        shell: bash
+      
+      # - uses: futureware-tech/simulator-action@v2
+      #   with:
+      #     model: ${{ inputs.device }}
+      #     os: 'iOS'
+      #     os_version: ${{ inputs.os_version }}
+      #     shutdown_after_job: true
 
-      - name: Run Appium tests (iOS)
-        run: WDIO_LOG_LEVEL='debug' npm run test:ios -- --spec features/counter.feature
+      # - name: Run Appium tests (iOS)
+      #   run: WDIO_LOG_LEVEL='debug' npm run test:ios -- --spec features/counter.feature
 
-      - name: Archive test report
-        if: always()
-        uses: actions/upload-artifact@v3.1.2
-        with:
-          name: cucumber-report
-          path: ./reports
+      # - name: Archive test report
+      #   if: always()
+      #   uses: actions/upload-artifact@v3.1.2
+      #   with:
+      #     name: cucumber-report
+      #     path: ./reports
 
-      - name: Archive appium
-        if: always()
-        uses: actions/upload-artifact@v3.1.2
-        with:
-          name: appium-logs
-          path: ./logs
+      # - name: Archive appium
+      #   if: always()
+      #   uses: actions/upload-artifact@v3.1.2
+      #   with:
+      #     name: appium-logs
+      #     path: ./logs
