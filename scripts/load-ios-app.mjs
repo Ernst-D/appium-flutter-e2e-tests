@@ -55,9 +55,14 @@ async function findWorkflow(name, app){
     if(name == null){
         throw new Error("Workflow name to lookup is null or undefined");
     }
-    const res = app.workflows;
+    const workflows = app.workflows;
+    const res = Object.values(workflows).find(workflow => workflow.name === name);
+    
+    if(!res){
+        throw new Error("Workflow is either undefined or not found based on its name, please check WORKFLOW_NAME env variable");
+    }
 
-    return Object.values(res).find(workflow => workflow.name === name);
+    return res;
 }
 
 /**
@@ -123,7 +128,12 @@ function findArtefactByType(artefacts){
     if(APP_TYPE == null){
         throw new Error("App type to look in build's artifacts is null or undefined")
     }
-    
+    const artefact = artefacts.find(artefact => artefact.type === appTypes[APP_TYPE]);
+
+    if(!artefact){
+        throw new Error("Could not find related build artefact, please check APP_TYPE env variable")
+    }
+
     return artefacts.find(artefact => artefact.type === appTypes[APP_TYPE]) 
 }
 
