@@ -49,7 +49,6 @@ async function getApp() {
  * @param {string | undefined} name
  * @param {{[x: string]: any;"_id": string;"workflows": object;}} app
  * @returns
- * @param {{ [x: string]: any; _id?: string; workflows: any; }} app
  */
 function findWorkflow(name, app){
     if(name == null){
