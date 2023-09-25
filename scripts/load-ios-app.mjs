@@ -51,7 +51,7 @@ async function getApp() {
  * @returns
  * @param {{ [x: string]: any; _id?: string; workflows: any; }} app
  */
-async function findWorkflow(name, app){
+function findWorkflow(name, app){
     if(name == null){
         throw new Error("Workflow name to lookup is null or undefined");
     }
@@ -139,7 +139,7 @@ function findArtefactByType(artefacts){
 
 const appId = (await getApp())._id;
 
-const workflow = await findWorkflow(WORKFLOW_NAME, await getApp());
+const workflow = findWorkflow(WORKFLOW_NAME, await getApp());
 const workflowId = workflow["_id"];
 
 const builds = (await getBuilds(appId, workflowId))["builds"]
