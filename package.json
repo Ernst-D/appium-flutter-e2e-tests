@@ -17,13 +17,14 @@
   "scripts": {
     "wdio": "wdio run ./config/wdio.conf.ts",
     "wdio:local": "wdio run ./config/wdio.local.conf.ts",
-    "test:ios":"npx wdio config/wdio.appium.local.conf.ts"
+    "test:ios": "npx wdio config/wdio.appium.local.conf.ts"
   },
   "dependencies": {
     "appium": "^2.0.1",
     "appium-flutter-driver": "^1.18.1",
     "appium-flutter-finder": "^0.1.0",
     "cucumber-html-reporter": "^7.1.1",
-    "deepmerge-ts": "^5.1.0"
+    "deepmerge-ts": "^5.1.0",
+    "dotenv": "^16.3.1"
   }
 }
