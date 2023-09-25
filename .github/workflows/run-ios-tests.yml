@@ -1,4 +1,4 @@
-name: Run iOS Appium tests
+name: Run Appium tests (iOS Simulator)
 
 on:
   workflow_dispatch:
@@ -8,26 +8,72 @@ on:
         description: Glob pattern to run spec
         required: false
         default: '/features/**/*.feature'
+      device:
+        type: choice
+        description: Device to run
+        required: true
+        default: 'iPhone 14'
+        options:
+          - 'iPhone 14'
+          - 'iPhone 14 Pro'
+          - 'iPhone SE (3rd generation)'
+      os_version:
+        type: choice
+        description: OS version for device
+        required: true
+        default: '16.4'
+        options:
+          - '16.4'
+          - '17.0'
       
-  
+
 jobs:
   ios-appium-tests:
-    timeout-minutes: 5
+    timeout-minutes: 20
     runs-on: macos-13
     steps:
       - uses: actions/checkout@v3
+      
       - uses: actions/setup-node@v3.5.1
         with:
           node-version: 18.12.1
+
       - name: Install dependencies
-        uses: bahmutov/npm-install@v1.8.28
+        uses: bahmutov/npm-install@v1.8.28    
+
+      - uses: futureware-tech/simulator-action@v2
         with:
-           install-command: npm ci
+          model: ${{ inputs.device }}
+          os: 'iOS'
+          os_version: ${{ inputs.os_version }}
+          shutdown_after_job: true
+        
+      - name: Build WebDriverAgent (iOS simulator)
+        run: |
+         chmod +x ${PWD}/.github/scripts/build_wda_sim.sh
+         ${PWD}/.github/scripts/build_wda_sim.sh
+        env:
+          DEVICE_NAME: ${{ inputs.device }}
+        shell: bash
+      
+      - name: Get app dir
+        run: |
+          ls app
+        shell: bash
+      
       - name: Run Appium tests (iOS)
-        run: npm run wdio -- --spec features/login.feature 
+        run: WDIO_LOG_LEVEL='debug' npm run test:ios -- --spec features/counter.feature
+
       - name: Archive test report
         if: always()
         uses: actions/upload-artifact@v3.1.2
         with:
           name: cucumber-report
           path: ./reports
+
+      - name: Archive appium
+        if: always()
+        uses: actions/upload-artifact@v3.1.2
+        with:
+          name: appium-logs
+          path: ./logs

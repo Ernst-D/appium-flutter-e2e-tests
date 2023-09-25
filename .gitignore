@@ -135,4 +135,5 @@ reports
 
 # ios app 
 Runner.app
-Runner.app.zip
+# Runner.app.zip
+app/wda
