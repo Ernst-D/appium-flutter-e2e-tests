@@ -2,9 +2,12 @@
 
 import "zx/globals";
 
-// $.verbose = false;
-
-const { CODEMAGIC_API_KEY, APP_NAME } = process.env;
+const { CODEMAGIC_API_KEY, APP_NAME, APP_TYPE, WORKFLOW_NAME } = process.env;
+const appTypes = {
+    app: "app",
+    apk: "apk",
+    ipa: "ipa"
+}
 
 /**
  * 
@@ -43,12 +46,15 @@ async function getApp() {
 }
 
 /**
- * @param {string} name
+ * @param {string | undefined} name
  * @param {Promise<{[x: string]: any;"_id": string;"workflows": object;}>}  } app
  * @returns
  * @param {{ [x: string]: any; _id?: string; workflows: any; }} app
  */
 async function findWorkflow(name, app){
+    if(name == null){
+        throw new Error("Workflow name to lookup is null or undefined");
+    }
     const res = app.workflows;
 
     return Object.values(res).find(workflow => workflow.name === name);
@@ -81,11 +87,11 @@ function getBuildsById(builds, workflowId){
 
 /**
  * 
- * @param { Array<{ [x: string]: any, index: number }> } obj 
+ * @param { Array<{ [x: string]: any, index: number }> } builds 
  * @returns {object}
  */
-function getLatestBuildByIndex(obj){
-    return obj.sort((a,b) => b.index - a.index).at(0);
+function getLatestBuildByIndex(builds){
+    return builds.sort((a,b) => b.index - a.index).at(0);
 }
 
 /**
@@ -110,23 +116,30 @@ async function createArtifactPublicUrl(url, expirationTime){
  * @param {string} publicUrl
  */
 async function downloadApp(publicUrl){
-    $`wget -O Runner.app.zip ${publicUrl}`.pipe(process.stdout)
+    await $`wget -O Runner.app.zip ${publicUrl}`.pipe(process.stdout)
+}
+
+function findArtefactByType(artefacts){
+    if(APP_TYPE == null){
+        throw new Error("App type to look in build's artifacts is null or undefined")
+    }
+    
+    return artefacts.find(artefact => artefact.type === appTypes[APP_TYPE]) 
 }
 
 const appId = (await getApp())._id;
 
-const workflow = await findWorkflow("ios_sim_dev_driver", await getApp());
+const workflow = await findWorkflow(WORKFLOW_NAME, await getApp());
 const workflowId = workflow["_id"];
 
 const builds = (await getBuilds(appId, workflowId))["builds"]
 const driverBuilds = getBuildsById(builds, workflowId);
 const latestDriverBuild = getLatestBuildByIndex(driverBuilds);
 
-const artifact = latestDriverBuild["artefacts"][0];
+const artifact = findArtefactByType(latestDriverBuild["artefacts"]);
 
 const secureDownloadUrl = artifact["url"];
-const publicDownloadUrl = (await createArtifactPublicUrl(secureDownloadUrl, 300))["url"];
 
-console.log(publicDownloadUrl);
+const publicDownloadUrl = (await createArtifactPublicUrl(secureDownloadUrl, 300))["url"];
 
 await downloadApp(publicDownloadUrl)
