@@ -4,14 +4,22 @@ $.verbose = false;
 
 const { CODEMAGIC_API_KEY, APP_NAME } = process.env;
 
+/**
+ * 
+ * @param {object} res 
+ * @returns 
+ */
 function parseResponse (res) {
-    return JSON.parse(res);
+    try {
+        return JSON.parse(res);
+    } catch (error) {
+        throw new Error("Error in parsing JSON response")
+    }
 }
 
 /**
  * 
- * @param {string} appName 
- * @returns {Promise<{ [x: string]: any, "_id": string, "workflows": object }>}}
+ * @returns {Promise<{ [x: string]: any, "_id": string, "workflows": object } >}}
  */
 async function getApp() {
     if(APP_NAME == null) {
@@ -32,19 +40,23 @@ async function getApp() {
     return app;
 }
 
-async function findWorkflow(name, codemagicApp){
-    const res = codemagicApp.workflows;
+/**
+ * 
+ * @param {string} name 
+ * @param {Promise<{ [x: string]: any, "_id": string, "workflows": object } >}} app 
+ * @returns 
+ */
+async function findWorkflow(name, app){
+    const res = app.workflows;
 
     return Object.values(res).find(workflow => workflow.name === name);
 }
 
-const appId = (await getApp())._id;
-const workflowName = await findWorkflow("ios_sim_dev_driver", await getApp());
-
-// console.log(workflowName);
-
-// note: maybe we can try to send build["_id"] in webhook somehow
-async function getBuilds(appId) {
+/**
+ * note: maybe we can try to send build["_id"] in webhook somehow
+ * @param {object} appId 
+ */
+async function getBuilds(appId, workflowName) {
     const res = await $`curl -H "Content-Type: application/json" \
     -H "x-auth-token: ${CODEMAGIC_API_KEY}" \
     --request GET https://api.codemagic.io/builds?appId=${appId}&workflowId=${workflowName["_id"]}`;
@@ -55,28 +67,33 @@ async function getBuilds(appId) {
 /**
  * 
  * @param {object[]} builds 
- * @param {string} id 
+ * @param {string} workflowId 
  * 
  * @returns {object[]}
  */
-function getBuildsById(builds, id){
-    const res = builds.filter(build => build.workflowId === id)
+function getBuildsById(builds, workflowId){
+    const res = builds.filter(build => build.workflowId === workflowId)
     return res;
 }
 
 /**
  * 
  * @param { Array<{ [x: string]: any, index: number }> } obj 
- * @returns {object[]}
+ * @returns {object}
  */
-const sorted = (obj) => obj.sort((a,b) => b.index - a.index)
+function getLatestBuildByIndex(obj){
+    return obj.sort((a,b) => b.index - a.index).at(0);
+}
+
+const appId = (await getApp())._id;
+const workflow = await findWorkflow("ios_sim_dev_driver", await getApp());
+const workflowId = workflow["_id"];
+const builds = (await getBuilds(appId, workflowId))["builds"]
+const driverBuilds = getBuildsById(builds, workflowId)
 
 console.log(
-    sorted(
-        getBuildsById((await getBuilds(appId))["builds"], workflowName["_id"]) 
-    )
-    .at(0)
-    );
+    getLatestBuildByIndex(driverBuilds)
+);
 process.exit(0)
 
 
