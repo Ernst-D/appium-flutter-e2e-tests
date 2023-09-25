@@ -1,3 +1,5 @@
+import 'dotenv/config'
+
 import type { Options } from '@wdio/types'
 import { cucumberReporter } from '../reporter';
 export const config: Options.Testrunner = {
