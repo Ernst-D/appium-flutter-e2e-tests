@@ -29,7 +29,7 @@ on:
 
 jobs:
   ios-appium-tests:
-    timeout-minutes: 20
+    timeout-minutes: 23
     runs-on: macos-13
     steps:
       - uses: actions/checkout@v3
@@ -66,22 +66,22 @@ jobs:
       
       - name: Get app dir
         run: |
-          ls app
+          ls
         shell: bash
       
-      # - name: Run Appium tests (iOS)
-      #   run: WDIO_LOG_LEVEL='debug' npm run test:ios -- --spec features/counter.feature
+      - name: Run Appium tests (iOS)
+        run: WDIO_LOG_LEVEL='debug' npm run test:ios -- --spec features/counter.feature
 
-      # - name: Archive test report
-      #   if: always()
-      #   uses: actions/upload-artifact@v3.1.2
-      #   with:
-      #     name: cucumber-report
-      #     path: ./reports
+      - name: Archive test report
+        if: always()
+        uses: actions/upload-artifact@v3.1.2
+        with:
+          name: cucumber-report
+          path: ./reports
 
-      # - name: Archive appium
-      #   if: always()
-      #   uses: actions/upload-artifact@v3.1.2
-      #   with:
-      #     name: appium-logs
-      #     path: ./logs
+      - name: Archive appium
+        if: always()
+        uses: actions/upload-artifact@v3.1.2
+        with:
+          name: appium-logs
+          path: ./logs
