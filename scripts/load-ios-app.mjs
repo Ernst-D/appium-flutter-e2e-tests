@@ -47,7 +47,7 @@ async function getApp() {
 
 /**
  * @param {string | undefined} name
- * @param {Promise<{[x: string]: any;"_id": string;"workflows": object;}>}  } app
+ * @param {{[x: string]: any;"_id": string;"workflows": object;}} app
  * @returns
  * @param {{ [x: string]: any; _id?: string; workflows: any; }} app
  */
