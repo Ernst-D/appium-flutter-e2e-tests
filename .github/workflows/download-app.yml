@@ -1,0 +1,30 @@
+name: Download app from Codemagic
+
+on:
+  workflow_dispatch
+
+jobs:
+  log-the-inputs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - uses: actions/setup-node@v3.5.1
+        with:
+          node-version: 18.12.1
+
+      - name: Install dependencies
+        uses: bahmutov/npm-install@v1.8.28    
+      
+      - name: Download app
+        working-directory: scripts
+        run: node load-ios-app.mjs
+        env:
+          CODEMAGIC_API_KEY: ${{ secrets.CODEMAGIC_API_KEY }}
+          APP_NAME: 'appium-flutter-ci-app'
+          WORKFLOW_NAME: 'sim_emu_dev_driver'
+          APP_TYPE: 'app'
+
+      - name: Get root dir content
+        run: ls
+        shell: bash
