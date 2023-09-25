@@ -1,6 +1,8 @@
+// @ts-check
+
 import "zx/globals";
 
-$.verbose = false;
+// $.verbose = false;
 
 const { CODEMAGIC_API_KEY, APP_NAME } = process.env;
 
@@ -41,10 +43,10 @@ async function getApp() {
 }
 
 /**
- * 
- * @param {string} name 
- * @param {Promise<{ [x: string]: any, "_id": string, "workflows": object } >}} app 
- * @returns 
+ * @param {string} name
+ * @param {Promise<{[x: string]: any;"_id": string;"workflows": object;}>}  } app
+ * @returns
+ * @param {{ [x: string]: any; _id?: string; workflows: any; }} app
  */
 async function findWorkflow(name, app){
     const res = app.workflows;
@@ -54,12 +56,13 @@ async function findWorkflow(name, app){
 
 /**
  * note: maybe we can try to send build["_id"] in webhook somehow
- * @param {object} appId 
+ * @param {object} appId
+ * @param {{ [x: string]: any; }} workflowName
  */
-async function getBuilds(appId, workflowName) {
+async function getBuilds(appId, workflowName, branchName = "main") {
     const res = await $`curl -H "Content-Type: application/json" \
     -H "x-auth-token: ${CODEMAGIC_API_KEY}" \
-    --request GET https://api.codemagic.io/builds?appId=${appId}&workflowId=${workflowName["_id"]}`;
+    --request GET https://api.codemagic.io/builds?appId=${appId}&workflowId=${workflowName["_id"]}&branch=${branchName}`;
 
     return parseResponse(res.stdout);
 };
@@ -85,27 +88,45 @@ function getLatestBuildByIndex(obj){
     return obj.sort((a,b) => b.index - a.index).at(0);
 }
 
+/**
+ * 
+ * @param {string} url secure url from build API response
+ * @param {number} expirationTime URL expiration UNIX timestamp in SECONDS
+ * @returns {Promise<{ url: string, expiresAt: string }>}
+ */
+async function createArtifactPublicUrl(url, expirationTime){
+    const publicUrl = url+"/public-url";
+    const seconds = Math.round(Date.now() / 1000) + expirationTime;
+
+    const curl = await $`curl -H "Content-Type: application/json" \
+    -H "x-auth-token: ${CODEMAGIC_API_KEY}" \
+    -d '{"expiresAt": ${seconds}}' \
+    -X POST ${publicUrl}`;
+
+    return parseResponse(curl.stdout);
+}
+
+/**
+ * @param {string} publicUrl
+ */
+async function downloadApp(publicUrl){
+    $`wget -O Runner.app.zip ${publicUrl}`.pipe(process.stdout)
+}
+
 const appId = (await getApp())._id;
+
 const workflow = await findWorkflow("ios_sim_dev_driver", await getApp());
 const workflowId = workflow["_id"];
+
 const builds = (await getBuilds(appId, workflowId))["builds"]
-const driverBuilds = getBuildsById(builds, workflowId)
+const driverBuilds = getBuildsById(builds, workflowId);
+const latestDriverBuild = getLatestBuildByIndex(driverBuilds);
 
-console.log(
-    getLatestBuildByIndex(driverBuilds)
-);
-process.exit(0)
+const artifact = latestDriverBuild["artefacts"][0];
 
+const secureDownloadUrl = artifact["url"];
+const publicDownloadUrl = (await createArtifactPublicUrl(secureDownloadUrl, 300))["url"];
 
-// see: https://docs.codemagic.io/rest-api/artifacts/
-const appLink = async (url) => await $`curl -H "x-auth-token: ${CODEMAGIC_API_KEY}" \
---request GET ${url}`.pipe(process.stdout);
+console.log(publicDownloadUrl);
 
-const res = await builds();
-
-//latest app
-const downloadUrl = JSON.parse(res.stdout)["builds"][0]["artefacts"][0]["url"];
-
-console.log(JSON.parse(res.stdout)["builds"]);
-console.log(downloadUrl);
-
+await downloadApp(publicDownloadUrl)
