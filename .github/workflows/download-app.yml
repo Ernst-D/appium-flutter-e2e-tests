@@ -1,4 +1,4 @@
-name: Download app from Codemagic
+name: (DEBUG) Download app from Codemagic
 
 on:
   workflow_dispatch
