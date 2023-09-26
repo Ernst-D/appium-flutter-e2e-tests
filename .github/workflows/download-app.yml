@@ -1,4 +1,4 @@
-name: Download app from Codemagic
+name: (DEBUG) Download app from Codemagic
 
 on:
   workflow_dispatch
@@ -17,8 +17,7 @@ jobs:
         uses: bahmutov/npm-install@v1.8.28    
       
       - name: Download app
-        working-directory: scripts
-        run: node load-ios-app.mjs
+        run: node ${PWD}/scripts/load-ios-app.mjs
         env:
           CODEMAGIC_API_KEY: ${{ secrets.CODEMAGIC_API_KEY }}
           APP_NAME: 'appium-flutter-ci-app'

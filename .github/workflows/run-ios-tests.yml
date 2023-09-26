@@ -29,7 +29,7 @@ on:
 
 jobs:
   ios-appium-tests:
-    timeout-minutes: 20
+    timeout-minutes: 23
     runs-on: macos-13
     steps:
       - uses: actions/checkout@v3
@@ -55,10 +55,18 @@ jobs:
         env:
           DEVICE_NAME: ${{ inputs.device }}
         shell: bash
+
+      - name: Download app from Codemagic (iOS Simulator)
+        run: node ${PWD}/scripts/load-ios-app.mjs
+        env:
+          CODEMAGIC_API_KEY: ${{ secrets.CODEMAGIC_API_KEY }}
+          APP_NAME: 'appium-flutter-ci-app'
+          WORKFLOW_NAME: 'sim_emu_dev_driver'
+          APP_TYPE: 'app'
       
       - name: Get app dir
         run: |
-          ls app
+          ls
         shell: bash
       
       - name: Run Appium tests (iOS)

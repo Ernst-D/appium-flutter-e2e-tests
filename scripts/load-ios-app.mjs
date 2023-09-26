@@ -47,11 +47,10 @@ async function getApp() {
 
 /**
  * @param {string | undefined} name
- * @param {Promise<{[x: string]: any;"_id": string;"workflows": object;}>}  } app
+ * @param {{[x: string]: any;"_id": string;"workflows": object;}} app
  * @returns
- * @param {{ [x: string]: any; _id?: string; workflows: any; }} app
  */
-async function findWorkflow(name, app){
+function findWorkflow(name, app){
     if(name == null){
         throw new Error("Workflow name to lookup is null or undefined");
     }
@@ -139,12 +138,15 @@ function findArtefactByType(artefacts){
 
 const appId = (await getApp())._id;
 
-const workflow = await findWorkflow(WORKFLOW_NAME, await getApp());
+const workflow = findWorkflow(WORKFLOW_NAME, await getApp());
 const workflowId = workflow["_id"];
 
 const builds = (await getBuilds(appId, workflowId))["builds"]
 const driverBuilds = getBuildsById(builds, workflowId);
 const latestDriverBuild = getLatestBuildByIndex(driverBuilds);
+
+console.log("\nLatest driver build:");
+console.log(latestDriverBuild);
 
 const artifact = findArtefactByType(latestDriverBuild["artefacts"]);
 
