@@ -145,6 +145,9 @@ const builds = (await getBuilds(appId, workflowId))["builds"]
 const driverBuilds = getBuildsById(builds, workflowId);
 const latestDriverBuild = getLatestBuildByIndex(driverBuilds);
 
+console.log("\nLatest driver build:");
+console.log(latestDriverBuild);
+
 const artifact = findArtefactByType(latestDriverBuild["artefacts"]);
 
 const secureDownloadUrl = artifact["url"];
