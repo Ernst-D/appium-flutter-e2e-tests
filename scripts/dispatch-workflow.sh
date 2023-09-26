@@ -4,4 +4,4 @@ curl -L \
   -H "Authorization: Bearer $GH_TOKEN" \
   -H "X-GitHub-Api-Version: 2022-11-28" \
   https://api.github.com/repos/Ernst-D/appium-flutter-e2e-tests/actions/workflows/run-ios-tests.yml/dispatches \
-  -d '{"ref":"fix-download-app-workflow","inputs":{"device":"iPhone 14","os_version":"16.4"}}'
+  -d '{"ref":"main","inputs":{"device":"iPhone 14","os_version":"16.4"}}'
