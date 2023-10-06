@@ -1,0 +1,53 @@
+name: test caching
+
+on:
+  workflow_dispatch:
+    inputs:
+        device:
+          type: choice
+          description: Device to run
+          required: true
+          default: 'iPhone 14'
+          options:
+            - 'iPhone 14'
+            - 'iPhone 14 Pro'
+            - 'iPhone SE (3rd generation)'
+        os_version:
+          type: choice
+          description: OS version for device
+          required: true
+          default: '16.4'
+          options:
+            - '16.4'
+            - '17.0'
+
+jobs:
+  cache-webdriveragent:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - uses: actions/setup-node@v3.5.1
+        with:
+          node-version: 18.12.1
+
+      - name: Restore cached wda
+        id: wda-cache-restore
+        uses: actions/cache/restore@v3
+        with:
+          # todo: change to wda dir later
+          path: node_modules
+          key: ${{ inputs.device }}-${{ inputs.os_version }}-wda
+
+      # todo: change later to 'build wda' step
+      - name: Install packages
+        run: npm i
+        shell: bash
+
+      - name: Cache wda 
+        id: cache-wda-save
+        uses: actions/cache/save@v3
+        with:
+          path: node_modules
+          key: ${{ inputs.device }}-${{ inputs.os_version }}-wda
